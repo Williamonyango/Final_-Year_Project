@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import "./Login.css";
 import logo from "../../assets/images/LOGO3.png";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
     const [error, setError] = useState("");
 
     const [action, setAction] = useState("Login");
@@ -13,15 +14,20 @@ function Login() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (!email || !password) {
+            setError("Please enter both email and password");
+            return;
+        }
+
         const validUsername = "admin@gmail.com";
         const validPassword = "admin";
         if (email === validUsername && password === validPassword) {
+            localStorage.setItem("authToken", "dummyToken");
             navigate("/home");
 
         } else {
             setError("Invalid username or password");
         }
-        // Add authentication logic here
     };
 
     const handleSignUp = () => {
@@ -46,8 +52,11 @@ function Login() {
                             id="text"
                             className="form-control"
                             placeholder="Enter your name"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={name}
+                            onChange={(e) => {
+                                setName(e.target.value)
+                                setError("")
+                            }}
                             required
                         />
                     </div>}
@@ -61,7 +70,11 @@ function Login() {
                             className="form-control"
                             placeholder="Enter your email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                setEmail(e.target.value)
+                                setError("")
+
+                            }}
                             required
                         />
                     </div>
@@ -73,7 +86,10 @@ function Login() {
                             className="form-control"
                             placeholder="Enter your password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value)
+                                setError("")
+                            }}
                             required
                         />
                     </div>
@@ -94,6 +110,7 @@ function Login() {
                     <button type="submit" className={action === "Login" ? "btn btn-primary" : "btn btn-secondary"} onClick={handleLogin}>
                         Login
                     </button>
+                    {error ? <p style={{ color: "red" }}>{error}</p> : null}
                     <button type="button" className={action == "Sign Up" ? "btn btn-primary" : "btn btn-secondary"} onClick={handleSignUp}>
                         Sign Up
                     </button>

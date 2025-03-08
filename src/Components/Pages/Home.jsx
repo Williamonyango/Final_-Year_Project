@@ -42,6 +42,18 @@ const Home = () => {
 
         <form onSubmit={handleSubmit} className='permit-form'>
           <div className="form">
+            <label htmlFor="station">Issued to</label>
+            <input
+              type="text"
+              id="engineer"
+              name="engineer"
+              placeholder="Engineer Name"
+              value={formData.engineer}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form">
             <label htmlFor="station">Station Number</label>
             <input
               type="text"
