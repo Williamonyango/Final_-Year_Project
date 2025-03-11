@@ -1,25 +1,40 @@
-import React from 'react'
-import { useState } from 'react';
-import './Home.css'
+import React, { use } from 'react'
+import { useState, useRef, useEffect } from 'react';
+// import './Home.css'
 import logo from '../../assets/images/LOGO3.png'
 const Home = () => {
 
   const [formData, setFormData] = useState({
     station: "",
-    operation: "",
-    location: "",
+    // operation: "",
+    // location: "",
+    engineer: "",
+    workCarriedOut: "",
+    DecralationA: "",
+    DecralationB: ""
   });
+  const textAreaRef = useRef(null); 
+
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData(prevFormData => ({
       ...prevFormData,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   };
 
+  useEffect(() => {
+    if (textAreaRef.current) {
+        textAreaRef.current.style.height = "auto"; // Reset height
+        textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`; // Expand to fit content
+    }
+}, [formData.workCarriedOut]); // Runs when `message` changes
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // alert(`Station: ${formData.station}, Operation: ${formData.operation}, Location: ${formData.location}`);
     console.log(formData);
   };
 
@@ -54,6 +69,81 @@ const Home = () => {
             />
           </div>
           <div className="form">
+            <label htmlFor="workCarriedOut">Work to be carried out:</label>
+            <textarea
+              ref={textAreaRef}
+              // value={value}
+              type="text"
+              id="workCarriedOut"
+              name="workCarriedOut"
+              placeholder="Type here..."
+              value={formData.workCarriedOut}
+              onChange={handleChange}
+              required
+
+              style={{
+                width: "100%",
+                minHeight: "50px",
+                resize: "none",
+                overflow: "hidden",
+                padding: "10px",
+                fontSize: "16px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            />
+          </div>
+
+
+          <div className="form">
+            <label htmlFor = "DecralationA"> A <p>I hereby declare that it is safe to work within the following defined limits in the Proximity of Live  HV / MV Apparatus </p></label>
+            <textarea
+              ref={textAreaRef}
+              type="text"
+              id="DecralationA"
+              name="DecralationA"
+              placeholder="Type here..."
+              value={formData.DecralationA}
+              onChange={handleChange}
+              required
+
+              style={{
+                width: "100%",
+                minHeight: "50px",
+                resize: "none",
+                overflow: "hidden",
+                padding: "10px",
+                fontSize: "16px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            />
+          </div>
+          <div className="form">
+            <label htmlFor = "DecralationB"> B <p>I hereby declare that it is safe to work on the following H.V Apparatus which is switched out, isolated from all live conductors and is connected to Earth.</p></label>
+            <textarea
+              ref={textAreaRef}
+              type="text"
+              id="DecralationB"
+              name="DecralationB"
+              placeholder="Type here..."
+              value={formData.DecralationB}
+              onChange={handleChange}
+              required
+
+              style={{
+                width: "100%",
+                minHeight: "50px",
+                resize: "none",
+                overflow: "hidden",
+                padding: "10px",
+                fontSize: "16px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            />
+          </div>
+          <div className="form">
             <label htmlFor="station">Station Number</label>
             <input
               type="text"
@@ -65,7 +155,9 @@ const Home = () => {
               required
             />
           </div>
-          <div className="form">
+
+
+          {/* <div className="form">
             <label htmlFor="operation">Operation</label>
             <select id="operation" name="operation" value={formData.operation} onChange={handleChange} required>
               <option value="">Select Operation</option>
@@ -74,10 +166,10 @@ const Home = () => {
               <option value="shutdown">Shutdown</option>
               <option value="testing">Testing</option>
             </select>
-          </div>
+          </div> */}
 
 
-          <div className="form">
+          {/* <div className="form">
             <label htmlFor="location">Location</label>
             <input
               type="text"
@@ -88,7 +180,7 @@ const Home = () => {
               onChange={handleChange}
               required
             />
-          </div>
+          </div> */}
 
           <button type="submit">Submit</button>
         </form>
