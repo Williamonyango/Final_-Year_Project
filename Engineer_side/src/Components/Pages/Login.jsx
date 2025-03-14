@@ -6,6 +6,7 @@ import LockIcon from "../../assets/icons/LockIcon";
 import EmailIcon from "../../assets/icons/EmailIcon";
 import PasswordIcon from "../../assets/icons/PasswordIcon";
 import UserIcon from "../../assets/icons/UserIcon";
+import axios from "axios";
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ function Login() {
         confirmPassword: "",
         name: ""
     });
+    const Pockethost_URL = 'https://zamar.pockethost.io/';
 
     const [error, setError] = useState("");
     const [isLogin, setIsLogin] = useState(true);
@@ -28,6 +30,7 @@ function Login() {
         }));
         setError("");
     };
+    
     useEffect(() => {
         // Apply styles when component mounts
         document.body.style.backgroundColor = "#f5f7fa";
@@ -37,7 +40,7 @@ function Login() {
         };
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const { email, password, confirmPassword, name } = formData;
 
@@ -58,29 +61,29 @@ function Login() {
         }
 
         setIsLoading(true);
-
-        // Simulate API call
-        setTimeout(() => {
+        try {
             if (isLogin) {
-                // Login logic
-                const validUsername = "admin@gmail.com";
-                const validPassword = "admin";
+                const response = await axios.get(`${Pockethost_URL}/api/collections/Nyandiga/records`, {
+                    params: {
+                        filter: `Email='${email}' && IdNumber='${password}'`
+                    }
+                });
 
-                if (email === validUsername && password === validPassword) {
-                    localStorage.setItem("authToken", "dummyToken");
+                if (response.data.items && response.data.items.length > 0) {
+                    const user = response.data.items[0];
+                    // Store user info and navigate - if server returned data, credentials are correct
+                    localStorage.setItem("authToken", user.id);
+                    localStorage.setItem("userName", user.Name);
                     navigate("/landingpage");
                 } else {
                     setError("Invalid username or password");
-                    setIsLoading(false);
                 }
-            } else {
-                // Sign up logic would go here
-                console.log("Sign up with:", formData);
-                // Normally you would make an API call here
-                setError("Sign up functionality not implemented yet");
-                setIsLoading(false);
             }
-        }, 1000);
+        } catch (error) {
+            setError("An error occurred. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const toggleMode = () => {
