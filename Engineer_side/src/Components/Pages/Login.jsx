@@ -20,6 +20,7 @@ function Login() {
     const [error, setError] = useState("");
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -29,8 +30,9 @@ function Login() {
             [id]: value
         }));
         setError("");
+        setSuccessMessage("");
     };
-    
+
     useEffect(() => {
         // Apply styles when component mounts
         document.body.style.backgroundColor = "#f5f7fa";
@@ -78,9 +80,50 @@ function Login() {
                 } else {
                     setError("Invalid username or password");
                 }
+            }else {
+                //sign up logic
+                //firt check if the email is already exist
+
+                const checkEmailResponse = await axios.get(`${Pockethost_URL}/api/collections/Nyandiga/records`, {
+                    params: {
+                        filter: `Email='${email}'`
+                    }
+                });
+
+                if (checkEmailResponse.data.items && checkEmailResponse.data.items.length > 0) {
+                    setError("Email already registered. Please sign in.");
+                    return;
+                }
+
+                //if email is not exist, then create a new user
+                const newUser = {
+                    Email: email,
+                    FirstName: name,
+                    IdNumber: password
+                };
+
+                const createResponse = await axios.post(`${Pockethost_URL}/api/collections/Nyandiga/records`, newUser);
+
+                if(createResponse.data.id){
+                    setSuccessMessage("Account created successfully. Please sign in.");
+                    setFormData({
+                        email: email,
+                        password: "",
+                        confirmPassword: "",
+                        name: ""
+                    });
+                    //switch to login mode
+                    setIsLogin(true);
+                } else {
+                setError("Failed to create account. Please try again.");
             }
+        }
         } catch (error) {
-            setError("An error occurred. Please try again.");
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError("An error occurred. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -89,6 +132,7 @@ function Login() {
     const toggleMode = () => {
         setIsLogin(!isLogin);
         setError("");
+        setSuccessMessage("");
     };
 
     return (
@@ -141,7 +185,15 @@ function Login() {
                         <p className="login-subtitle">
                             {isLogin ? "Sign in to access your account" : "Register for online services"}
                         </p>
-
+                            {successMessage && <p style={{
+                                    color: '#2e7d32',
+                                    backgroundColor: '#e8f5e9',
+                                    padding: '10px 15px',
+                                    borderRadius: '4px',
+                                    marginBottom: '15px',
+                                    border: '1px solid #c8e6c9',
+                                    fontWeight: '500'
+                                }}>{successMessage}</p>}
                         {!isLogin && (
                             <div className="form-group">
                                 <label htmlFor="name">Full Name</label>
